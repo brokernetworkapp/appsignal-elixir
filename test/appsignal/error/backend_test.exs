@@ -34,28 +34,24 @@ defmodule Appsignal.Error.BackendTest do
 
   describe "handle_event/3, when no span exists" do
     setup do
-      [pid: spawn(fn -> raise "Exception" end)]
+      pid = spawn(fn -> raise "Exception" end)
+      :timer.sleep(100)
+      [pid: pid]
     end
 
     test "creates a span", %{pid: pid} do
-      until(fn ->
-        assert {:ok, [{"background_job", nil, [pid: ^pid]}]} = Test.Tracer.get(:create_span)
-      end)
+      assert {:ok, [{"background_job", nil, [pid: ^pid]}]} = Test.Tracer.get(:create_span)
     end
 
     test "adds an error to the created span", %{pid: pid} do
-      until(fn ->
-        assert {:ok, [{%Span{pid: ^pid}, :error, %RuntimeError{message: "Exception"}, stack} | _]} =
-                 Test.Span.get(:add_error)
+      assert {:ok, [{%Span{pid: ^pid}, :error, %RuntimeError{message: "Exception"}, stack} | _]} =
+               Test.Span.get(:add_error)
 
-        assert is_list(stack)
-      end)
+      assert is_list(stack)
     end
 
     test "closes the created span" do
-      until(fn ->
-        assert {:ok, [{%Span{}}]} = Test.Tracer.get(:close_span)
-      end)
+      assert {:ok, [{%Span{}}]} = Test.Tracer.get(:close_span)
     end
   end
 
@@ -75,20 +71,18 @@ defmodule Appsignal.Error.BackendTest do
           span -> span
         end
 
+      :timer.sleep(100)
+
       [pid: pid, span: span]
     end
 
     test "adds an error to the existing span", %{span: span} do
-      until(fn ->
-        assert {:ok, [{^span, :error, %RuntimeError{message: "Exception"}, _stack} | _]} =
-                 Test.Span.get(:add_error)
-      end)
+      assert {:ok, [{^span, :error, %RuntimeError{message: "Exception"}, _stack} | _]} =
+               Test.Span.get(:add_error)
     end
 
     test "closes the existing span", %{span: span} do
-      until(fn ->
-        assert {:ok, [{^span}]} = Test.Tracer.get(:close_span)
-      end)
+      assert {:ok, [{^span}]} = Test.Tracer.get(:close_span)
     end
   end
 
@@ -117,29 +111,25 @@ defmodule Appsignal.Error.BackendTest do
           :erlang.error(:badarg)
         end)
 
+      :timer.sleep(100)
+
       [pid: pid]
     end
 
     test "creates a span", %{pid: pid} do
-      until(fn ->
-        assert {:ok, [{"background_job", nil, [pid: ^pid]}]} = Test.Tracer.get(:create_span)
-      end)
+      assert {:ok, [{"background_job", nil, [pid: ^pid]}]} = Test.Tracer.get(:create_span)
     end
 
     test "adds an error to the created span", %{pid: pid} do
-      until(fn ->
-        assert {:ok,
-                [{%Span{pid: ^pid}, :error, %ArgumentError{message: "argument error"}, stack} | _]} =
-                 Test.Span.get(:add_error)
+      assert {:ok,
+              [{%Span{pid: ^pid}, :error, %ArgumentError{message: "argument error"}, stack} | _]} =
+               Test.Span.get(:add_error)
 
-        assert is_list(stack)
-      end)
+      assert is_list(stack)
     end
 
     test "closes the created span" do
-      until(fn ->
-        assert {:ok, [{%Span{}}]} = Test.Tracer.get(:close_span)
-      end)
+      assert {:ok, [{%Span{}}]} = Test.Tracer.get(:close_span)
     end
   end
 
@@ -164,28 +154,24 @@ defmodule Appsignal.Error.BackendTest do
           pid -> pid
         end
 
+      :timer.sleep(100)
+
       [pid: pid]
     end
 
     test "creates a span", %{pid: pid} do
-      until(fn ->
-        assert {:ok, [{"background_job", nil, [pid: ^pid]}]} = Test.Tracer.get(:create_span)
-      end)
+      assert {:ok, [{"background_job", nil, [pid: ^pid]}]} = Test.Tracer.get(:create_span)
     end
 
     test "adds an error to the created span", %{pid: pid} do
-      until(fn ->
-        assert {:ok, [{%Span{pid: ^pid}, :error, %RuntimeError{message: "Exception"}, stack} | _]} =
-                 Test.Span.get(:add_error)
+      assert {:ok, [{%Span{pid: ^pid}, :error, %RuntimeError{message: "Exception"}, stack} | _]} =
+               Test.Span.get(:add_error)
 
-        assert is_list(stack)
-      end)
+      assert is_list(stack)
     end
 
     test "closes the created span", %{pid: pid} do
-      until(fn ->
-        assert {:ok, [{%Span{pid: ^pid}} | _]} = Test.Tracer.get(:close_span)
-      end)
+      assert {:ok, [{%Span{pid: ^pid}} | _]} = Test.Tracer.get(:close_span)
     end
   end
 
@@ -195,28 +181,23 @@ defmodule Appsignal.Error.BackendTest do
 
       GenServer.cast(pid, :raise_error)
 
+      :timer.sleep(100)
       [pid: pid]
     end
 
     test "creates a span", %{pid: pid} do
-      until(fn ->
-        assert {:ok, [{"background_job", nil, [pid: ^pid]}]} = Test.Tracer.get(:create_span)
-      end)
+      assert {:ok, [{"background_job", nil, [pid: ^pid]}]} = Test.Tracer.get(:create_span)
     end
 
     test "adds an error to the created span", %{pid: pid} do
-      until(fn ->
-        assert {:ok, [{%Span{pid: ^pid}, :error, %KeyError{}, stack} | _]} =
-                 Test.Span.get(:add_error)
+      assert {:ok, [{%Span{pid: ^pid}, :error, %KeyError{}, stack} | _]} =
+               Test.Span.get(:add_error)
 
-        assert is_list(stack)
-      end)
+      assert is_list(stack)
     end
 
     test "closes the created span", %{pid: pid} do
-      until(fn ->
-        assert {:ok, [{%Span{pid: ^pid}} | _]} = Test.Tracer.get(:close_span)
-      end)
+      assert {:ok, [{%Span{pid: ^pid}} | _]} = Test.Tracer.get(:close_span)
     end
   end
 
