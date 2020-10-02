@@ -148,12 +148,15 @@ defmodule Appsignal.Error.BackendTest do
       parent = self()
 
       spawn(fn ->
-        %Task{pid: pid} =
-          Task.async(fn ->
-            raise "Exception"
-          end)
+        Process.flag(:trap_exit, true)
 
-        send(parent, pid)
+        Task.async(fn ->
+          raise "Exception"
+        end)
+
+        receive do
+          {:EXIT, from, _reason} -> send(parent, from)
+        end
       end)
 
       pid =
