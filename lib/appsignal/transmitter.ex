@@ -22,8 +22,7 @@ defmodule Appsignal.Transmitter do
                  verify: :verify_peer,
                  cacertfile: ca_file_path,
                  depth: 4,
-                 ciphers: ciphers(),
-                 honor_cipher_order: :undefined
+                 ciphers: ciphers()
                ] ++ customize_hostname_check_or_verify_fun()
            ]}
 

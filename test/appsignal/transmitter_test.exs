@@ -45,7 +45,7 @@ defmodule Appsignal.TransmitterTest do
         assert ssl_options[:ciphers] == :ssl.cipher_suites()
     end
 
-    assert ssl_options[:honor_cipher_order] == :undefined
+    true
   end
 
   test "uses the configured CA certificate" do

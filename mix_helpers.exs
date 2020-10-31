@@ -203,8 +203,7 @@ defmodule Mix.Appsignal.Helper do
           verify: :verify_peer,
           cacertfile: priv_path("cacert.pem"),
           depth: 4,
-          ciphers: ciphers(),
-          honor_cipher_order: :undefined
+          ciphers: ciphers()
         ] ++ customize_hostname_check_or_verify_fun()
     ]
 
